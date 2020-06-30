@@ -13,7 +13,7 @@ function onCityClick() {
     let inputValue = $('#city-input').val()
     appendCityToList(inputValue)
     getWeatherJSON(inputValue)
-    populateToday(inputValue)
+    //populateToday(inputValue)
     // add item to the city history list
     // hit the api
     // save to local storage
@@ -27,32 +27,18 @@ function appendCityToList(city) {
     $("#city-history-div").prepend(newDiv)
 };
 
-// let ajaxParams = function(city) {
-//     ajaxObj = new Object();
-//     ajaxObj.q = city
-//     ajaxObj.appid = apiKey
-//     console.log(JSON.stringify(ajaxObj))
-//     return $.param(ajaxObj)
-// };
-
 function getWeatherJSON(city) {
     $.ajax({
         url: weatherUrl + '?q=' + city + '&appid=' + apiKey,
         method: "GET"})
     .then((response) => {
         JSONresponse = response
+    }).then(() => {
+        console.log(JSONresponse)
+        populateToday(city)
     });
 };
 
-// function getWeatherJSON() {
-//     $.ajax({
-//         url: queryURL,
-//         method: "GET"
-//       }).then(function(response) {
-//           console.log(JSON.stringify(response))
-//       });
-// };
-
 function populateToday(city) {
-    $("#0-day-content").text(`${city} | ${moment.unix(response[0].dt).format('MM / dd / YYYY')} | WEATHER ICON`)
+    $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.list[0].dt).format('MM / dd / YYYY')} | WEATHER ICON`)
 };
