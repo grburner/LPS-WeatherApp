@@ -1,0 +1,170 @@
+<!-- # 06 Server-Side APIs: Weather Dashboard
+
+Developers are often tasked with retrieving data from another application's API and using it in the context of their own. Third-party APIs allow developers to access their data and functionality by making requests with specific parameters to a URL. Your challenge is to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
+
+Use the [OpenWeather API](https://openweathermap.org/api) to retrieve weather data for cities. The documentation includes a section called "How to start" that will provide basic setup and usage instructions. Use `localStorage` to store any persistent data.
+
+## User Story
+
+```
+AS A traveler
+I WANT to see the weather outlook for multiple cities
+SO THAT I can plan a trip accordingly
+```
+
+## Acceptance Criteria
+
+```
+GIVEN a weather dashboard with form inputs
+WHEN I search for a city
+THEN I am presented with current and future conditions for that city and that city is added to the search history
+WHEN I view current weather conditions for that city
+THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
+WHEN I view the UV index
+THEN I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
+WHEN I view future weather conditions for that city
+THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, and the humidity
+WHEN I click on a city in the search history
+THEN I am again presented with current and future conditions for that city
+WHEN I open the weather dashboard
+THEN I am presented with the last searched city forecast
+```
+
+The following image demonstrates the application functionality:
+
+![weather dashboard demo](./Assets/06-server-side-apis-homework-demo.png)
+
+## Review
+
+You are required to submit the following for review:
+
+* The URL of the deployed application.
+
+* The URL of the GitHub repository. Give the repository a unique name and include a README describing the project.
+
+- - -
+© 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved. -->
+
+
+<!-- // container
+  // col - 3
+    // search bar
+
+    // search history
+  // col - 9
+  // row 
+    // current temp
+  // row 
+    // 5 day forcast  -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-3 border-right">
+                <div class="row">
+                    <!-- search button -->
+                    <h2 class="my-2">Search for a city:</h2>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="city-input" placeholder="Enter city here" aria-label="Enter city here">
+                        <div class="input-group-append">
+                          <span class="input-group-text" id="city-input-submit">GO!</span>
+                        </div>
+                      </div>
+                </div>
+                <div class="row">
+                    <!-- past search list -->
+                    <ul class="list-group list-group-flush" id="city-history-div"></ul>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="row">
+                    <!-- current day weather -->
+                    <div class="card w-75">
+                        <div class="card-body">
+                          <h5 class="card-title" id="0-day-content">CITY | DATE | WEATHER ICON</h5>
+                          <p class="card-text">TEMPERATURE: XX.X F</p>
+                          <p class="card-text">HUMIDITY: XX%</p>
+                          <p class="card-text">WIND SPEED: X.X MPH</p>
+                          <p class="card-text">UX INDEX: X.XX WRAPPED IN BUTTON!!!!!!</p>
+                        </div>
+                      </div>
+                </div>
+                <div class="row">
+                    <!-- previous five days weather -->
+                    <div class="row row-cols-5">
+                        <div class="col mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">DATE</h5>
+                                    WEATHER LOGO!!!
+                                    <p class="card-text">TEMPERATURE: XX.X F</p>
+                                    <p class="card-text">HUMIDITY: XX%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">DATE</h5>
+                                    WEATHER LOGO!!!
+                                    <p class="card-text">TEMPERATURE: XX.X F</p>
+                                    <p class="card-text">HUMIDITY: XX%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">DATE</h5>
+                                    WEATHER LOGO!!!
+                                    <p class="card-text">TEMPERATURE: XX.X F</p>
+                                    <p class="card-text">HUMIDITY: XX%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">DATE</h5>
+                                    WEATHER LOGO!!!
+                                    <p class="card-text">TEMPERATURE: XX.X F</p>
+                                    <p class="card-text">HUMIDITY: XX%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">DATE</h5>
+                                    WEATHER LOGO!!!
+                                    <p class="card-text">TEMPERATURE: XX.X F</p>
+                                    <p class="card-text">HUMIDITY: XX%</p>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
