@@ -67,18 +67,16 @@ function populateToday(city) {
 function populateNextFive() {
     console.log('into populateNextFive')
     for ( var i = 0; i < 40; i+=8 ) {
-        let dayMoment = JSONresponse.list[i].dt
-        console.log(dayMoment)
         let nextDayDiv = $("<div>").attr("class", "col mb-4")
-        let cardHumi = $("<p>").attr("class", "card-text").text(`Humidity: ${JSONresponse.list[i].main.humidity}`)
-        let cardTemp = $("<p>").attr("class", "card-text").text(`Temp: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)}`)
-        let cardTitle = $("<h5>").attr("class", "card-title").text(`${unixToDate(dayMoment)} WEATHER`)
+        // let cardHumi = $("<p>").attr("class", "card-text").text(`Humidity: ${JSONresponse.list[i].main.humidity}`)
+        // let cardTemp = $("<p>").attr("class", "card-text").text(`Temp: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)}`)
+        // let cardTitle = $("<h5>").attr("class", "card-title").text(`${unixToDate(dayMoment)} WEATHER`)
         let cardLogo = $("<img>").attr("src", `${weatherImgURL}${JSONresponse.list[0].weather[0].icon}@2x.png`)
         $("#card-class").append(`<div class="col mb-4">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">${moment.unix(JSONresponse.list[i].dt).format('MM / dd / YYYY')}</h5>
-                ${cardLogo}
+                <img src=${weatherImgURL}${JSONresponse.list[i].weather[0].icon}@2x.png>
                 <p class="card-text">TEMPERATURE: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)} F</p>
                 <p class="card-text">HUMIDITY: ${JSONresponse.list[i].main.humidity}%</p>
             </div>
