@@ -48,6 +48,13 @@ function KtoC(kTemp) {
     return ((kTemp-273.15)*1.8)+32
 };
 
+function unixToDate(unix) {
+    let milliseconds = unix * 1000
+    let dateObject = new Date(milliseconds)
+    let humanReadFormat = dateObject.toLocaleDateString()
+    return humanReadFormat
+};
+
 function populateToday(city) {
     $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.list[0].dt).format('MM / dd / YYYY')}`)
     $("0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.list[0].weather[0].icon}@2x.png`)
@@ -59,11 +66,13 @@ function populateToday(city) {
 
 function populateNextFive() {
     console.log('into populateNextFive')
-    for ( var i = 1; i < 6; i++ ) {
+    for ( var i = 0; i < 40; i+=8 ) {
+        let dayMoment = JSONresponse.list[i].dt
+        console.log(dayMoment)
         let nextDayDiv = $("<div>").attr("class", "col mb-4")
         let cardHumi = $("<p>").attr("class", "card-text").text(`Humidity: ${JSONresponse.list[i].main.humidity}`)
         let cardTemp = $("<p>").attr("class", "card-text").text(`Temp: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)}`)
-        let cardTitle = $("<h5>").attr("class", "card-title").text(`${moment.unix(JSONresponse.list[i].dt).format('MM / dd / YYYY')} WEATHER`)
+        let cardTitle = $("<h5>").attr("class", "card-title").text(`${unixToDate(dayMoment)} WEATHER`)
         let cardLogo = $("<img>").attr("src", `${weatherImgURL}${JSONresponse.list[0].weather[0].icon}@2x.png`)
         $("#card-class").append(`<div class="col mb-4">
         <div class="card">
