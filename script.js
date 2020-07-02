@@ -5,6 +5,7 @@ const latLngAPIKey = '0b251c9c19f64ae5b292ad0419accefb'
 const queryURL = 'http://api.openweathermap.org/data/2.5/forecast?q=Philadelphia&appid=19b8547136b89322d77e0706c122753f'
 let JSONresponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
+const uvObj = {2: 'green', 5: 'yellow', 7: 'orange', 10: 'red', 11: 'purple'};
 
 $(document).ready(function() {
     if ( localStorage.getItem('user-query') ) {
@@ -21,17 +22,8 @@ $(document).ready(function() {
 });
 
 function onCityClick(inputValue) {
-    //let inputValue = $('#city-input').val()
-    //appendCityToList(inputValue)
     getWeatherJSON(inputValue)
     storeCityInput(inputValue)
-    //populateNextFive()
-    //populateToday(inputValue)
-    // add item to the city history list
-    // hit the api
-    // save to local storage
-    // limit the amount of entries in storage and on page
-    // generate JSON to update the other elements in the page
 };
 
 function appendCityToList(city) {
@@ -80,25 +72,13 @@ function getWeatherJSON(city) {
     });
 };
 
-function KtoC(kTemp) {
-    kTemp = parseFloat(kTemp);
-    return ((kTemp-273.15)*1.8)+32
-};
-
-function unixToDate(unix) {
-    let milliseconds = unix * 1000
-    let dateObject = new Date(milliseconds)
-    let humanReadFormat = dateObject.toLocaleDateString()
-    return humanReadFormat
-};
-
 function populateToday(city) {
     $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.current.dt).format('lll')}`)
     $("0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.current.weather[0].icon}@2x.png`)
     $('#0-day-temp').text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}`)
     $('#0-day-humi').text(`Humidity: ${JSONresponse.current.humidity}`)
     $('#0-day-wind').text(`Wind: ${JSONresponse.current.wind_speed}`)
-    $('#0-day-uxin').text(`UV Index: ${JSONresponse.current.uvi}`)
+    $('#uv-color').text(`${JSONresponse.current.uvi}`).css("background-color", uvFormat(JSONresponse.current.uvi))
 };
 
 function populateNextFive() {
@@ -123,7 +103,6 @@ function storeCityInput(input) {
 
     let setStorageArray = []
     $(".list-group-item").each(function() {
-        console.log($(this).text())
         setStorageArray.push($(this).text())
     });
     localStorage.setItem('user-query', setStorageArray)
@@ -135,3 +114,27 @@ function getLocalStorage() {(
         $("#city-history-div").append(newDiv)
     })
 )};
+
+// --- conversion and format functions -- //
+
+function KtoC(kTemp) {
+    kTemp = parseFloat(kTemp);
+    return ((kTemp-273.15)*1.8)+32
+};
+
+function unixToDate(unix) {
+    let milliseconds = unix * 1000
+    let dateObject = new Date(milliseconds)
+    let humanReadFormat = dateObject.toLocaleDateString()
+    return humanReadFormat
+};
+
+function uvFormat(ind) {
+    for (const property in uvObj) {
+        if (ind < [property]) {
+            return uvObj[property]
+        } else if (ind > 11) {
+            return 'purple'
+        };
+    };
+};
