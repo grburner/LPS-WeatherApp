@@ -1,5 +1,7 @@
-const weatherUrl = 'http://api.openweathermap.org/data/2.5/forecast'
-const apiKey = '19b8547136b89322d77e0706c122753f'
+const weatherUrl = 'https://api.openweathermap.org/data/2.5/onecall?'
+const weatherAPIKey = '19b8547136b89322d77e0706c122753f'
+const latLngAPI = 'https://api.opencagedata.com/geocode/v1/json?q='
+const latLngAPIKey = '0b251c9c19f64ae5b292ad0419accefb'
 const queryURL = 'http://api.openweathermap.org/data/2.5/forecast?q=Philadelphia&appid=19b8547136b89322d77e0706c122753f'
 let JSONresponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
@@ -12,7 +14,7 @@ $(document).ready(function() {
 
 function onCityClick() {
     let inputValue = $('#city-input').val()
-    appendCityToList(inputValue)
+    //appendCityToList(inputValue)
     getWeatherJSON(inputValue)
     //populateNextFive()
     //populateToday(inputValue)
@@ -30,16 +32,38 @@ function appendCityToList(city) {
 };
 
 function getWeatherJSON(city) {
+    let searchLat
+    let searchLng
     $.ajax({
-        url: weatherUrl + '?q=' + city + '&appid=' + apiKey,
-        method: "GET"})
+        url: latLngAPI + city + '&key=' + latLngAPIKey,
+        method: 'GET'})
     .then((response) => {
-        JSONresponse = response
+        searchLat = response.results[0].geometry.lat
+        searchLng = response.results[0].geometry.lng
     }).then(() => {
-        console.log(JSONresponse)
-        populateToday(city)
-    }).then(() => {
-        populateNextFive()
+        $.ajax({
+            url: weatherUrl + 'lat=' + searchLat + '&lon=' + searchLng + '&exclude=minutely,hourly&appid=' + weatherAPIKey,
+            method: "GET"})
+        .then((response) => {
+            JSONresponse = response
+        }).then(() => {
+            console.log(JSONresponse)
+            populateToday(city)
+        }).then(() => {
+            populateNextFive()
+        }).then((jqXHR, exception) => {
+            //if ( jqXHR.status === 200 ) {
+                appendCityToList(city)
+        }).fail(function (jqXHR, exception) {
+            if ( jqXHR.status !== 200 ) {
+                console.log ('error: ' + jqXHR.status)
+                $("#city-input").val()
+                $("city-input").attr("placeholder", "try again!")
+            } else if ( exception ) {
+                console.log('exception: ' + exception)
+                $("#city-input").val()/*.attr("placeholder", "api issue...")*/
+            }
+        });
     });
 };
 
@@ -85,3 +109,5 @@ function populateNextFive() {
     // moment isnt working here because the object is mutable
     };
 };
+
+//0b251c9c19f64ae5b292ad0419accefb
