@@ -11,12 +11,17 @@ $(document).ready(function() {
         getLocalStorage()
     }
     $("#city-input-submit").on("click", function() {
-        onCityClick()
+        let inputValue = $('#city-input').val()
+        onCityClick(inputValue)
+    });
+    $(".list-group-item").on("click", function(e) {
+        let inputValue = $(this).text()
+        onCityClick(inputValue)
     });
 });
 
-function onCityClick() {
-    let inputValue = $('#city-input').val()
+function onCityClick(inputValue) {
+    //let inputValue = $('#city-input').val()
     //appendCityToList(inputValue)
     getWeatherJSON(inputValue)
     storeCityInput(inputValue)
@@ -121,16 +126,11 @@ function storeCityInput(input) {
         console.log($(this).text())
         setStorageArray.push($(this).text())
     });
-
-    // setStorageArray.forEach(element => {
-    //     localStorage.setItem('user-query', element)
-    // });
     localStorage.setItem('user-query', setStorageArray)
 };
 
 function getLocalStorage() {(
     localStorage.getItem('user-query').split(',').forEach((item) => {
-        console.log('next item')
         let newDiv = $("<li>").text(item).attr("class", "list-group-item")
         $("#city-history-div").append(newDiv)
     })
