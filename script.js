@@ -7,6 +7,7 @@ let JSONresponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
 
 $(document).ready(function() {
+    getLocalStorage()
     $("#city-input-submit").on("click", function() {
         onCityClick()
     });
@@ -16,6 +17,7 @@ function onCityClick() {
     let inputValue = $('#city-input').val()
     //appendCityToList(inputValue)
     getWeatherJSON(inputValue)
+    storeCityInput(inputValue)
     //populateNextFive()
     //populateToday(inputValue)
     // add item to the city history list
@@ -37,6 +39,7 @@ function getWeatherJSON(city) {
     $.ajax({
         url: latLngAPI + city + '&key=' + latLngAPIKey,
         method: 'GET'})
+        //use $params to encode user input to account for spaces/special chars
     .then((response) => {
         searchLat = response.results[0].geometry.lat
         searchLng = response.results[0].geometry.lng
@@ -50,6 +53,7 @@ function getWeatherJSON(city) {
             console.log(JSONresponse)
             populateToday(city)
         }).then(() => {
+            $("#card-class").empty();
             populateNextFive()
         }).then((jqXHR, exception) => {
             if ( jqXHR.status === 200 ) {
@@ -65,6 +69,7 @@ function getWeatherJSON(city) {
                 $("#city-input").val()/*.attr("placeholder", "api issue...")*/
             }
         });
+        // fail case needs work
     });
 };
 
@@ -92,12 +97,7 @@ function populateToday(city) {
 function populateNextFive() {
     console.log('into populateNextFive')
     for ( var i = 1; i < 6; i++ ) {
-        //let nextDayDiv = $("<div>").attr("class", "col mb-4")
-        // let cardHumi = $("<p>").attr("class", "card-text").text(`Humidity: ${JSONresponse.list[i].main.humidity}`)
-        // let cardTemp = $("<p>").attr("class", "card-text").text(`Temp: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)}`)
-        // let cardTitle = $("<h5>").attr("class", "card-title").text(`${unixToDate(dayMoment)} WEATHER`)
-        //let cardLogo = $("<img>").attr("src", `${weatherImgURL}${JSONresponse.daily[i].weather[0].icon}@2x.png`)
-        $("#card-class").append(`<div class="col mb-4">
+        $("#card-class").append(`<div class="col mb-4 daily-card">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">${moment.unix(JSONresponse.daily[i].dt).format('MM / dd / YYYY')}</h5>
@@ -107,8 +107,25 @@ function populateNextFive() {
             </div>
         </div>
     </div>`)
-    // moment isnt working here because the object is mutable
     };
 };
 
-//0b251c9c19f64ae5b292ad0419accefb
+function storeCityInput(input) {
+    let newDiv = $("<li>").text(input).attr("class", "list-group-item")
+    $("#city-history-div").prepend(newDiv)
+
+    let setStorageArray = []
+    $(".list-group-item").each(function() {
+        setStorageArray.push($(this).text())
+    })
+
+    localStorage.setItem('user-query', JSON.stringify(setStorageArray))
+};
+
+function getLocalStorage() {(
+    localStorage.getItem('user-query').split(',').forEach((item) => {
+        console.log('next item')
+        let newDiv = $("<li>").text(item).attr("class", "list-group-item")
+        $("#city-history-div").append(newDiv)
+    })
+)};
