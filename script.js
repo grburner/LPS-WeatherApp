@@ -4,6 +4,7 @@ const latLngAPI = 'https://api.opencagedata.com/geocode/v1/json?q='
 const latLngAPIKey = '0b251c9c19f64ae5b292ad0419accefb'
 const queryURL = 'http://api.openweathermap.org/data/2.5/forecast?q=Philadelphia&appid=19b8547136b89322d77e0706c122753f'
 let JSONresponse = ''
+let locationResponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
 const uvObj = {2: 'green', 5: 'yellow', 7: 'orange', 10: 'red', 11: 'purple'};
 
@@ -40,6 +41,7 @@ function getWeatherJSON(city) {
         method: 'GET'})
         //use $params to encode user input to account for spaces/special chars
     .then((response) => {
+        locationResponse = response
         searchLat = response.results[0].geometry.lat
         searchLng = response.results[0].geometry.lng
     }).then(() => {
@@ -73,12 +75,13 @@ function getWeatherJSON(city) {
 };
 
 function populateToday(city) {
-    $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.current.dt).format('lll')}`)
-    $("0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.current.weather[0].icon}@2x.png`)
-    $('#0-day-temp').text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}`)
-    $('#0-day-humi').text(`Humidity: ${JSONresponse.current.humidity}`)
-    $('#0-day-wind').text(`Wind: ${JSONresponse.current.wind_speed}`)
-    $('#uv-color').text(`${JSONresponse.current.uvi}`).css("background-color", uvFormat(JSONresponse.current.uvi))
+    $("#0-day-city").text(`${locationResponse.results[0].components.city}, ${locationResponse.results[0].components.state}`)
+    $("#0-day-time").text(`${moment.unix(JSONresponse.current.dt).format('lll')}`)
+    $("#0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.current.weather[0].icon}@2x.png`)
+    $("#0-day-temp").text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}`)
+    $("#0-day-humi").text(`Humidity: ${JSONresponse.current.humidity}`)
+    $("#0-day-wind").text(`Wind: ${JSONresponse.current.wind_speed}`)
+    $("#uv-color").text(`${ JSONresponse.current.uvi}`).css("background-color", uvFormat(JSONresponse.current.uvi))
 };
 
 function populateNextFive() {
@@ -87,7 +90,7 @@ function populateNextFive() {
         $("#card-class").append(`<div class="col mb-4 daily-card">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">${moment.unix(JSONresponse.daily[i].dt).format('MM / dd / YYYY')}</h5>
+                <h5 class="card-title">${moment.unix(JSONresponse.daily[i].dt).format("dddd")}</h5>
                 <img src=${weatherImgURL}${JSONresponse.daily[i].weather[0].icon}@2x.png>
                 <p class="card-text">HIGH TEMP: ${KtoC(JSONresponse.daily[i].temp.max).toFixed(0)} F</p>
                 <p class="card-text">HUMIDITY: ${JSONresponse.daily[i].humidity}%</p>
@@ -138,3 +141,9 @@ function uvFormat(ind) {
         };
     };
 };
+
+// fix city name and date
+// only let 10 cities in storage with no repeats 
+// mobile responsive
+// better start screen
+// clear search bar after click
