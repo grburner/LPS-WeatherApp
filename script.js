@@ -52,8 +52,9 @@ function getWeatherJSON(city) {
         }).then(() => {
             populateNextFive()
         }).then((jqXHR, exception) => {
-            //if ( jqXHR.status === 200 ) {
+            if ( jqXHR.status === 200 ) {
                 appendCityToList(city)
+            }
         }).fail(function (jqXHR, exception) {
             if ( jqXHR.status !== 200 ) {
                 console.log ('error: ' + jqXHR.status)
@@ -80,29 +81,29 @@ function unixToDate(unix) {
 };
 
 function populateToday(city) {
-    $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.list[0].dt).format('MM / dd / YYYY')}`)
-    $("0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.list[0].weather[0].icon}@2x.png`)
-    $('#0-day-temp').text(`Temperature: ${KtoC(JSONresponse.list[0].main.temp).toFixed(0)}`)
-    $('#0-day-humi').text(`Humidity: ${JSONresponse.list[0].main.humidity}`)
-    $('#0-day-wind').text(`Wind: ${JSONresponse.list[0].wind.speed}`)
-    $('#0-day-uxin').text(`UV Index: `/*need to get UV*/)
+    $("#0-day-content").text(`${city} | ${moment.unix(JSONresponse.current.dt).format('lll')}`)
+    $("0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.current.weather[0].icon}@2x.png`)
+    $('#0-day-temp').text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}`)
+    $('#0-day-humi').text(`Humidity: ${JSONresponse.current.humidity}`)
+    $('#0-day-wind').text(`Wind: ${JSONresponse.current.wind_speed}`)
+    $('#0-day-uxin').text(`UV Index: ${JSONresponse.current.uvi}`)
 };
 
 function populateNextFive() {
     console.log('into populateNextFive')
-    for ( var i = 0; i < 40; i+=8 ) {
-        let nextDayDiv = $("<div>").attr("class", "col mb-4")
+    for ( var i = 1; i < 6; i++ ) {
+        //let nextDayDiv = $("<div>").attr("class", "col mb-4")
         // let cardHumi = $("<p>").attr("class", "card-text").text(`Humidity: ${JSONresponse.list[i].main.humidity}`)
         // let cardTemp = $("<p>").attr("class", "card-text").text(`Temp: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)}`)
         // let cardTitle = $("<h5>").attr("class", "card-title").text(`${unixToDate(dayMoment)} WEATHER`)
-        let cardLogo = $("<img>").attr("src", `${weatherImgURL}${JSONresponse.list[0].weather[0].icon}@2x.png`)
+        //let cardLogo = $("<img>").attr("src", `${weatherImgURL}${JSONresponse.daily[i].weather[0].icon}@2x.png`)
         $("#card-class").append(`<div class="col mb-4">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">${moment.unix(JSONresponse.list[i].dt).format('MM / dd / YYYY')}</h5>
-                <img src=${weatherImgURL}${JSONresponse.list[i].weather[0].icon}@2x.png>
-                <p class="card-text">TEMPERATURE: ${KtoC(JSONresponse.list[i].main.temp).toFixed(0)} F</p>
-                <p class="card-text">HUMIDITY: ${JSONresponse.list[i].main.humidity}%</p>
+                <h5 class="card-title">${moment.unix(JSONresponse.daily[i].dt).format('MM / dd / YYYY')}</h5>
+                <img src=${weatherImgURL}${JSONresponse.daily[i].weather[0].icon}@2x.png>
+                <p class="card-text">HIGH TEMP: ${KtoC(JSONresponse.daily[i].temp.max).toFixed(0)} F</p>
+                <p class="card-text">HUMIDITY: ${JSONresponse.daily[i].humidity}%</p>
             </div>
         </div>
     </div>`)
