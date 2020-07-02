@@ -7,7 +7,9 @@ let JSONresponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
 
 $(document).ready(function() {
-    getLocalStorage()
+    if ( localStorage.getItem('user-query') ) {
+        getLocalStorage()
+    }
     $("#city-input-submit").on("click", function() {
         onCityClick()
     });
@@ -116,10 +118,14 @@ function storeCityInput(input) {
 
     let setStorageArray = []
     $(".list-group-item").each(function() {
+        console.log($(this).text())
         setStorageArray.push($(this).text())
-    })
+    });
 
-    localStorage.setItem('user-query', JSON.stringify(setStorageArray))
+    // setStorageArray.forEach(element => {
+    //     localStorage.setItem('user-query', element)
+    // });
+    localStorage.setItem('user-query', setStorageArray)
 };
 
 function getLocalStorage() {(
