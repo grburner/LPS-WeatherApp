@@ -8,6 +8,7 @@ let locationResponse = ''
 let weatherImgURL = 'http://openweathermap.org/img/wn/'
 const uvObj = {2: 'green', 5: 'yellow', 7: 'orange', 10: 'red', 11: 'purple'};
 
+// fills divs based on click of the search bar
 $(document).ready(function() {
         getLocalStorage()
     $("#city-input-submit").on("click", function() {
@@ -16,64 +17,70 @@ $(document).ready(function() {
     });
 });
 
+// fills divs based on click in the history bar
 $("#city-history-div").delegate("li", "click", function(e) {
     let inputValue = $(this).text()
     onCityClick(inputValue)
 });
 
+// callback function for click events
 function onCityClick(inputValue) {
-    console.log('into click event callback')
     getWeatherJSON(inputValue)
     storeCityInput(inputValue)
 };
 
+// adds current search to city history div
 function appendCityToList(city) {
-    console.log(city)
     let newDiv = $("<li>").addClass("list-group-item").text(city)
     $("#city-history-div").prepend(newDiv)
 };
 
+/* --- AJAX --- */
+// weather LAT LNG & WEATHER AJAX call
 function getWeatherJSON(city) {
     let searchLat
     let searchLng
+    
+    // send query to opencage with user search to get lat lng data for that city
     $.ajax({
         url: latLngAPI + city + '&key=' + latLngAPIKey,
         method: 'GET'})
-        //use $params to encode user input to account for spaces/special chars
     .then((response) => {
         locationResponse = response
         searchLat = response.results[0].geometry.lat
         searchLng = response.results[0].geometry.lng
+    // take the lat lng data and add it to the open weather api query
     }).then(() => {
         $.ajax({
             url: weatherUrl + 'lat=' + searchLat + '&lon=' + searchLng + '&exclude=minutely,hourly&appid=' + weatherAPIKey,
             method: "GET"})
         .then((response) => {
             JSONresponse = response
+        // populate global weather object
         }).then(() => {
-            console.log(JSONresponse)
             populateToday(city)
+        // remove all previous 5 day forcast then repopluate with updated list
         }).then(() => {
             $("#card-class").empty();
             populateNextFive()
-        }).then((jqXHR, exception) => {
+        // if 200 add the search to the history
+        }).then((jqXHR) => {
             if ( jqXHR.status === 200 ) {
                 appendCityToList(city)
             }
+        // exception manager (still buggy)
         }).fail(function (jqXHR, exception) {
             if ( jqXHR.status !== 200 ) {
-                console.log ('error: ' + jqXHR.status)
                 $("#city-input").val()
                 $("city-input").attr("placeholder", "try again!")
             } else if ( exception ) {
-                console.log('exception: ' + exception)
-                $("#city-input").val()/*.attr("placeholder", "api issue...")*/
+                $("#city-input").val()
             }
         });
-        // fail case needs work
     });
 };
 
+// populates current day div object with openweather response
 function populateToday(city) {
     $("#0-day-city").text(`${locationResponse.results[0].components.city}, ${locationResponse.results[0].components.state}`)
     $("#0-day-time").text(`${moment.unix(JSONresponse.current.dt).format('lll')}`)
@@ -84,6 +91,7 @@ function populateToday(city) {
     $("#uv-color").text(`${ JSONresponse.current.uvi}`).css("background-color", uvFormat(JSONresponse.current.uvi))
 };
 
+// populates 5 day forcase with openweather response
 function populateNextFive() {
     for ( var i = 1; i < 6; i++ ) {
         $("#card-class").append(`<div class="col mb-4 daily-card">
@@ -99,17 +107,12 @@ function populateNextFive() {
     };
 };
 
-/*
-1) getLocalStorage()
-2) search -> storeCityInput() -> resetPastSearchs()
-*/
-
 // list items then runs getLocalStorage() to reset
 function resetPastSearches() {
     $("#city-history-div").empty()
 };
 
-// adds search term to local storage
+// clear previous searches -> adds search term to local storage -> repopulate previous seaches after storage update
 function storeCityInput(input) {
     resetPastSearches()
     if (!localStorage.getItem('user-query')) {
@@ -135,11 +138,13 @@ function getLocalStorage() {
 
 // --- conversion and format functions -- //
 
+//kelvin to farenheight
 function KtoC(kTemp) {
     kTemp = parseFloat(kTemp);
     return ((kTemp-273.15)*1.8)+32
 };
 
+//converts unix time to human readable
 function unixToDate(unix) {
     let milliseconds = unix * 1000
     let dateObject = new Date(milliseconds)
@@ -147,6 +152,7 @@ function unixToDate(unix) {
     return humanReadFormat
 };
 
+// uses k/v looping to set formatting for the UV index
 function uvFormat(ind) {
     for (const property in uvObj) {
         if (ind < [property]) {
@@ -156,8 +162,3 @@ function uvFormat(ind) {
         };
     };
 };
-
-// only let 10 cities in storage with no repeats 
-// mobile responsive
-// better start screen
-// clear search bar after click
