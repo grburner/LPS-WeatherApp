@@ -17,9 +17,7 @@ $(document).ready(function() {
 });
 
 $("#city-history-div").delegate("li", "click", function(e) {
-    console.log(e)
     let inputValue = $(this).text()
-    console.log(inputValue)
     onCityClick(inputValue)
 });
 
