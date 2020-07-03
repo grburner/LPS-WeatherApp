@@ -78,9 +78,9 @@ function populateToday(city) {
     $("#0-day-city").text(`${locationResponse.results[0].components.city}, ${locationResponse.results[0].components.state}`)
     $("#0-day-time").text(`${moment.unix(JSONresponse.current.dt).format('lll')}`)
     $("#0-day-wimg").attr("src", `${weatherImgURL}${JSONresponse.current.weather[0].icon}@2x.png`)
-    $("#0-day-temp").text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}`)
-    $("#0-day-humi").text(`Humidity: ${JSONresponse.current.humidity}`)
-    $("#0-day-wind").text(`Wind: ${JSONresponse.current.wind_speed}`)
+    $("#0-day-temp").text(`Temperature: ${KtoC(JSONresponse.current.temp).toFixed(0)}°F`)
+    $("#0-day-humi").text(`Humidity: ${JSONresponse.current.humidity}%`)
+    $("#0-day-wind").text(`Wind: ${JSONresponse.current.wind_speed}mph`)
     $("#uv-color").text(`${ JSONresponse.current.uvi}`).css("background-color", uvFormat(JSONresponse.current.uvi))
 };
 
@@ -91,7 +91,7 @@ function populateNextFive() {
             <div class="card-body">
                 <h5 class="card-title">${moment.unix(JSONresponse.daily[i].dt).format("dddd")}</h5>
                 <img src=${weatherImgURL}${JSONresponse.daily[i].weather[0].icon}@2x.png>
-                <p class="card-text">HIGH TEMP: ${KtoC(JSONresponse.daily[i].temp.max).toFixed(0)} F</p>
+                <p class="card-text">HIGH TEMP: ${KtoC(JSONresponse.daily[i].temp.max).toFixed(0)}°F</p>
                 <p class="card-text">HUMIDITY: ${JSONresponse.daily[i].humidity}%</p>
             </div>
         </div>
