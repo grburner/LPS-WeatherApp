@@ -128,7 +128,7 @@ function getLocalStorage() {
     if ( localStorage.getItem('user-query') ) {
         localStorage.getItem('user-query').split(',').forEach((item) => {
             let newDiv = $("<li>").text(item).attr("class", "list-group-item")
-            $("#city-history-div").append(newDiv)
+            $("#city-history-div").prepend(newDiv)
         });
     };
 };
