@@ -9,20 +9,22 @@ let weatherImgURL = 'http://openweathermap.org/img/wn/'
 const uvObj = {2: 'green', 5: 'yellow', 7: 'orange', 10: 'red', 11: 'purple'};
 
 $(document).ready(function() {
-    if ( localStorage.getItem('user-query') ) {
         getLocalStorage()
-    }
     $("#city-input-submit").on("click", function() {
         let inputValue = $('#city-input').val()
         onCityClick(inputValue)
     });
-    $(".list-group-item").on("click", function(e) {
-        let inputValue = $(this).text()
-        onCityClick(inputValue)
-    });
+});
+
+$("#city-history-div").delegate("li", "click", function(e) {
+    console.log(e)
+    let inputValue = $(this).text()
+    console.log(inputValue)
+    onCityClick(inputValue)
 });
 
 function onCityClick(inputValue) {
+    console.log('into click event callback')
     getWeatherJSON(inputValue)
     storeCityInput(inputValue)
 };
@@ -85,7 +87,6 @@ function populateToday(city) {
 };
 
 function populateNextFive() {
-    console.log('into populateNextFive')
     for ( var i = 1; i < 6; i++ ) {
         $("#card-class").append(`<div class="col mb-4 daily-card">
         <div class="card">
@@ -100,23 +101,39 @@ function populateNextFive() {
     };
 };
 
-function storeCityInput(input) {
-    let newDiv = $("<li>").text(input).attr("class", "list-group-item")
-    $("#city-history-div").prepend(newDiv)
+/*
+1) getLocalStorage()
+2) search -> storeCityInput() -> resetPastSearchs()
+*/
 
-    let setStorageArray = []
-    $(".list-group-item").each(function() {
-        setStorageArray.push($(this).text())
-    });
-    localStorage.setItem('user-query', setStorageArray)
+// list items then runs getLocalStorage() to reset
+function resetPastSearches() {
+    $("#city-history-div").empty()
 };
 
-function getLocalStorage() {(
-    localStorage.getItem('user-query').split(',').forEach((item) => {
-        let newDiv = $("<li>").text(item).attr("class", "list-group-item")
-        $("#city-history-div").append(newDiv)
-    })
-)};
+// adds search term to local storage
+function storeCityInput(input) {
+    resetPastSearches()
+    if (!localStorage.getItem('user-query')) {
+        localStorage.setItem('user-query', input)
+        getLocalStorage()
+    } else {
+        let getLocal = localStorage.getItem('user-query')
+        localStorage.setItem('user-query', getLocal + ',' + input)
+        getLocalStorage()
+    }
+    
+};
+
+// populates list items based on whats in local storage
+function getLocalStorage() {
+    if ( localStorage.getItem('user-query') ) {
+        localStorage.getItem('user-query').split(',').forEach((item) => {
+            let newDiv = $("<li>").text(item).attr("class", "list-group-item")
+            $("#city-history-div").append(newDiv)
+        });
+    };
+};
 
 // --- conversion and format functions -- //
 
@@ -142,7 +159,6 @@ function uvFormat(ind) {
     };
 };
 
-// fix city name and date
 // only let 10 cities in storage with no repeats 
 // mobile responsive
 // better start screen
