@@ -8,5 +8,5 @@ Areas for improvement:
 -- fixed exception manager for API call 
 
 
-Link to deployed URL: https://grburner.github.io/week6_hw/
+Link to deployed URL: https://grburner.github.io/LPS-WeatherApp/
 Link to git repo: https://github.com/grburner/week6_hw
